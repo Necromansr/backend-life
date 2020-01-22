@@ -1,0 +1,31 @@
+{
+  "name": "backend-life",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "express-fileupload": "^1.1.5",
+    "express-session": "^1.16.1",
+    "forever": "^1.0.0",
+    "generate-password": "^1.4.2",
+    "jimp": "^0.8.2",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.9.1",
+    "multer": "^1.4.1",
+    "mysql2": "^1.6.5",
+    "nodemailer": "^6.3.0",
+    "password-generator": "^2.2.0",
+    "sendmail": "^1.6.1",
+    "sequelize": "^5.8.6",
+    "shortid": "^2.2.14"
+  }
+}
