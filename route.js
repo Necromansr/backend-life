@@ -51,4 +51,7 @@ router.route('/review')
       .post(controllers.Review.createReview)
       .get(controllers.Review.showReview)
 
+router.route('/like')
+      .post(controllers.Review.createLike)
+
 module.exports = router;

@@ -10,8 +10,10 @@ class Review extends Sequelize.Model{
                     autoIncrement: true
                 },
                 id_place: DataTypes.INTEGER,
+                id_user: DataTypes.INTEGER,
                 name: DataTypes.STRING,
-                message: DataTypes.STRING
+                message: DataTypes.STRING,
+                rating: DataTypes.DOUBLE
             }, {
                 modelName: "review",
                 sequelize

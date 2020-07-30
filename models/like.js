@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 
-class Answer extends Sequelize.Model{
+class Like extends Sequelize.Model{
     static init(sequelize, DataTypes) {
         return super.init(
             {
@@ -11,13 +11,11 @@ class Answer extends Sequelize.Model{
                 },
                 id_review: DataTypes.INTEGER,
                 id_user: DataTypes.INTEGER,
-                name: DataTypes.STRING,
-                message: DataTypes.STRING
             }, {
-                modelName: "answer",
+                modelName: "like",
                 sequelize
             });
     }
 }
 
-module.exports = Answer;
+module.exports = Like;

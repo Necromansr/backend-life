@@ -3,7 +3,16 @@ const crypto = require('crypto'),
     shortId = require('shortid');
     let jwt = require('jsonwebtoken');
 
+function replaceUndefinedOrNull(key, value) {
+        if (value === null || value === undefined || value === '') {
+          return undefined;
+        }
+        
+        return value;
+}
 exports.createPlace  = async (req,res)=>{
+
+    
         let image = [];
         let token = req.headers['x-access-token'] || req.headers['authorization']; // Express headers are auto converted to lowercase
         if (token.startsWith('Bearer ')) {
@@ -34,15 +43,19 @@ exports.createPlace  = async (req,res)=>{
             }
         }
         try{req.body["time"] = req.body.time.join(";")}catch(e){}
+        try{req.body["phone"] = req.body.phone.join(";")}catch(e){console.log(e)}
+        try{req.body["email"] = req.body.email.join(";")}catch(e){console.log(e)}
+
         try {
             let data = jwt.decode(token)
 
             req.body['id_user'] = data.id;
-        let Place = await models.Place.create(req.body);
+        let Place = await models.Place.create(JSON.parse(JSON.stringify(req.body,replaceUndefinedOrNull)));
         res.status(201).send({
             message: 'Place added succesfully.',
         });
         } catch(e){
+            console.log(e)
             res.status(400).send({
                 message: "Failed to add place."
             });
@@ -74,12 +87,21 @@ exports.showPlaceUser  = async (req,res)=>{
     "areaId",
     "phone",
     "email",
+    'facebook',
+    'break',
+    'instagram',
+    'telegram',
+    'twitter',
     "url",
     "address",
     "about",
     "time"], raw: true, where: { id_user: data.id } });
-    try{Place["time"] = Place.time.split(";");}catch(e){}
-    try{Place["image"] = Place.image.split(";");}catch(e){}
+    Place.map(x=>{
+        try{x["time"] = x.time.split(";");}catch(e){}
+        try{x["time"] = x.time.split(";");}catch(e){}
+        try{x["email"] = x.email.split(";");}catch(e){}
+        try{x["phone"] = x.phone.split(";");}catch(e){}
+    })
     return  res.status(201).json(Place);
 }
 exports.showPlaceId  = async (req,res)=>{
@@ -104,6 +126,11 @@ exports.showPlaceId  = async (req,res)=>{
     "cityId",
     "areaId",
     "phone",
+    'facebook',
+    'break',
+    'instagram',
+    'telegram',
+    'twitter',
     "email",
     "url",
     "address",
@@ -111,6 +138,8 @@ exports.showPlaceId  = async (req,res)=>{
     "time"], raw: true, where: { id: req.query.id } });
     try{Place["time"] = Place.time.split(";");}catch(e){}
     try{Place["image"] = Place.image.split(";");}catch(e){}
+    try{x["email"] = x.email.split(";");}catch(e){}
+    try{x["phone"] = x.phone.split(";");}catch(e){}
     models.History.create({id_place: req.query.id,id_user:data.id});
     return  res.status(201).json(filledProps(Place));
 }
@@ -123,6 +152,11 @@ exports.showPlace  = async (req,res)=>{
     "city",
     "area",
     "typeId",
+    'facebook',
+    'break',
+    'instagram',
+    'telegram',
+    'twitter',
     "cityId",
     "areaId",
     "email",
@@ -133,6 +167,8 @@ exports.showPlace  = async (req,res)=>{
     Place.map(x=>{
         try{x["time"] = x.time.split(";");}catch(e){}
         try{x["image"] = x.image.split(";");}catch(e){}
+        try{x["email"] = x.email.split(";");}catch(e){}
+        try{x["phone"] = x.phone.split(";");}catch(e){}
     })
     return  res.status(201).json(Place);
 }
@@ -146,6 +182,11 @@ exports.showAllPlace  = async (req,res)=>{
     "area",
     "typeId",
     "cityId",
+    'facebook',
+    'break',
+    'instagram',
+    'telegram',
+    'twitter',
     "areaId",
     "email",
     "url",
@@ -155,18 +196,19 @@ exports.showAllPlace  = async (req,res)=>{
     Place.map(x=>{
         try{x["time"] = x.time.split(";");}catch(e){}
         try{x["image"] = x.image.split(";");}catch(e){}
+        try{x["email"] = x.email.split(";");}catch(e){}
+        try{x["phone"] = x.phone.split(";");}catch(e){}
     })
     return  res.status(201).json(Place);
 }
 exports.updatePlace = async (req,res)=>{
+    let image = [];
         try{
-            let image = await models.Place.findOne({attributes: ["image"], raw: true, where: { id: req.body.id  } });
-            image = image.split(";");
             req.files.file.map(x=>{
                 let name = shortId.generate();
                 x.mv(__dirname+'/../public/image/'+name+'.jpg', (err)=> {
                     if (err)
-                        return res.status(500).send(err);
+                    console.log(err)
                 })
                 image.push(name+'.jpg')
             })
@@ -176,15 +218,17 @@ exports.updatePlace = async (req,res)=>{
                     let name = shortId.generate();
                     req.files.file.mv(__dirname+'/../public/image/'+name+'.jpg', (err)=> {
                         if (err)
-                            return res.status(500).send(err);
+                            console.log(err)
                     })
                     image.push(name+'.jpg')
                     req.body["image"] = image.join(";")
             }catch(e){
-    
+                console.log(e)
             }
         }
         try{req.body["time"] = req.body.time.join(";")}catch(e){}
+        try{req.body["phone"] = req.body.phone.join(";")}catch(e){}
+        try{req.body["email"] = req.body.email.join(";")}catch(e){}
         try {
         let Place = await models.Place.update(req.body,{where:{id:req.body.id}});
         res.status(201).send({
@@ -240,3 +284,4 @@ var filledProps = el => {
       return newObj;
     }, {});
   };
+

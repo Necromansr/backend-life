@@ -8,6 +8,7 @@ exports.createAnswer = async (req,res)=>{
     try {
         let answer = await models.Answer.create({
             id_review: req.body.id,
+            id_user: req.body.id_user,
             name: req.body.name,
             message: req.body.message
         })
@@ -22,11 +23,28 @@ exports.createAnswer = async (req,res)=>{
 }
 
 exports.showAnswer = async (req,res)=>{
-    let answer = await models.Answer.findAll({attributes: ["id",
+    let answer = await models.Answer.findAll({attributes: ["id","id_user",
     "name","message"],raw: true,
         where:{id_review:req.query.id}
     })
-    return res.status(201).json(answer);
+    // console.log(answer)
+    let result = answer.map( async x=>{
+        try{
+            let user = await models.User.findOne({attributes: ["name",
+    "avatar"], raw: true, where: { id: x.id_user } });
+            return {
+                id: x.id,
+                name:user.name,
+                avatar: user.avatar,
+                id_user: x.id_user,
+                message:x.message,
+            }
+        }catch(e){
+            console.log(e)
+        }
+    })
+    return res.status(201).json(await Promise.all(result).then(x=> x));
+    // return res.status(201).json(answer);
 }
 // exports.updateAnswer = (req,res)=>{
     
